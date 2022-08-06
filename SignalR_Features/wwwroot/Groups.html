@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Groups</title>
+</head>
+<body>
+    
+</body>
+</html>
+<script src="signalr.js"></script>
+<script>
+    let connection = new signalR.HubConnectionBuilder()
+        .withUrl("/hubs/groups")
+        .build();
+
+    connection.on("Message", data => console.log('GroupHook', data));
+    connection.on("client_method_name", data => console.log("Message", data))
+
+    // after triggerFetch
+    connection.start()
+
+    const message = () => connection.send("Message", "hi everyone except me")
+    const join = () => connection.send("Join");
+    const leave = () => connection.send("Leave");
+</script>

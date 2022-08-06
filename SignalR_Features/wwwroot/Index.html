@@ -1,0 +1,41 @@
+﻿<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <script src="signalr.js"></script>
+    <script>
+    let connection = new signalR.HubConnectionBuilder()
+        .withUrl("/hubs/custom")
+        .build();
+
+    // after selfPing
+    connection.on("ServerHook", data => console.log('ClientHook', data));
+    connection.on("SelfPing", data => console.log('ClientHook', data));
+    connection.on("PingAll", data => console.log('ClientHook', data));
+    connection.on("client_method_name", data => console.log('client_method_name', data));
+
+    // after triggerFetch
+        connection.start().then(() => {
+            console.log("connected");
+            connection.send("ServerHook", "we've connected!");
+    });
+
+        // call signalR hub function from client
+        let pingSelf = function () { connection.send('SelfPing', "data") }
+
+        // call signalR hub function from client
+        let pingAll = function () { connection.send('PingAll', "data") }
+
+        // trigger hub from controller
+        let triggerFetch = () => fetch('/send')
+
+    // call signalR hub function from client
+    const withReturn = () => connection.invoke('invocation_with_return')
+        .then(data => console.log('returned', data))
+
+
+    </script>
+</body>
+</html>
